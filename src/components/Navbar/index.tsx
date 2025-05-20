@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
-import { IconCar } from "@tabler/icons-react";
 import ThemeToggler from "./ThemeToggler";
+import { IconTypography } from "@tabler/icons-react";
 
 const Header = () => {
   return (
@@ -12,7 +12,7 @@ const Header = () => {
             href="/"
             className="text-2xl font-bold flex items-center py-2 rounded-lg hover:bg-base-200 transition-colors duration-300"
           >
-            <IconCar size={56} className="text-secondary mx-2" />
+            <IconTypography size={56} className="text-secondary mx-2" />
             <div className="flex flex-col items-start gap-1 w-full">
               <div className="flex items-baseline gap-[2px]">
                 <span className="text-primary font-extrabold text-xl">

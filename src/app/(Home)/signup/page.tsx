@@ -12,7 +12,15 @@ const SignUp = () => {
     email: "",
     contact: "",
     profileImage: "",
-    address: "",
+    dob: "",
+    gender: "",
+    address: {
+      line1: "",
+      line2: "",
+      city: "",
+      state: "",
+      pincode: "",
+    },
     aadharCard: {
       number: "",
       image: "",
@@ -27,13 +35,15 @@ const SignUp = () => {
   const router = useRouter();
 
   const handleSubmit = async () => {
-    console.log(formData);
     if (
       !formData.name ||
       !formData.contact ||
       !formData.email ||
       !formData.password ||
-      !formData.address ||
+      !formData.address.line1 ||
+      !formData.address.city ||
+      !formData.address.state ||
+      !formData.address.pincode ||
       !formData.aadharCard.number ||
       !formData.profileImage ||
       !formData.aadharCard.image ||
@@ -239,14 +249,93 @@ const SignUp = () => {
                 </button>
               </div>
 
-              <textarea
-                placeholder="Enter Your Address"
-                className="textarea textarea-bordered textarea-primary w-full text-base-content placeholder:text-base-content/70"
-                value={formData.address}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <input
+                  type="text"
+                  placeholder="Address Line 1"
+                  className="input input-bordered input-primary w-full text-base-content"
+                  value={formData.address.line1}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      address: { ...formData.address, line1: e.target.value },
+                    })
+                  }
+                />
+                <input
+                  type="text"
+                  placeholder="Address Line 2"
+                  className="input input-bordered input-primary w-full text-base-content"
+                  value={formData.address.line2}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      address: { ...formData.address, line2: e.target.value },
+                    })
+                  }
+                />
+                <input
+                  type="text"
+                  placeholder="City"
+                  className="input input-bordered input-primary w-full text-base-content"
+                  value={formData.address.city}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      address: { ...formData.address, city: e.target.value },
+                    })
+                  }
+                />
+                <input
+                  type="text"
+                  placeholder="State"
+                  className="input input-bordered input-primary w-full text-base-content"
+                  value={formData.address.state}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      address: { ...formData.address, state: e.target.value },
+                    })
+                  }
+                />
+                <input
+                  type="text"
+                  placeholder="Pincode"
+                  className="input input-bordered input-primary w-full text-base-content"
+                  maxLength={6}
+                  value={formData.address.pincode}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      address: { ...formData.address, pincode: e.target.value },
+                    })
+                  }
+                />
+              </div>
+
+              <select
+                className="select select-bordered select-primary w-full text-base-content"
+                value={formData.gender || ""}
+                onChange={(e) =>
+                  setFormData({ ...formData, gender: e.target.value })
+                }
+              >
+                <option value="" disabled>
+                  Select Gender
+                </option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+
+              <input
+                type="date"
+                className="input input-bordered input-primary w-full text-base-content placeholder:text-base-content/70"
+                value={formData.dob}
                 onChange={(e) => {
-                  setFormData({ ...formData, address: e.target.value });
+                  setFormData({ ...formData, dob: e.target.value });
                 }}
-              ></textarea>
+              />
 
               <fieldset className="fieldset">
                 <legend className="fieldset-legend text-base">
