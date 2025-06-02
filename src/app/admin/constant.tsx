@@ -4,9 +4,7 @@ import {
   IconUserCheck,
   IconFileText,
   IconUsers,
-  IconUserScan,
-  IconSettings,
-  IconDatabase,
+  IconGitPullRequest,
 } from "@tabler/icons-react";
 
 export const SIDENAV_ITEMS: SideNavItem[] = [
@@ -29,5 +27,10 @@ export const SIDENAV_ITEMS: SideNavItem[] = [
     title: "Results",
     path: "/admin/results",
     icon: <IconUserCheck width="24" height="24" />,
+  },
+  {
+    title: "Requests",
+    path: "/admin/requests",
+    icon: <IconGitPullRequest width="24" height="24" />,
   },
 ];

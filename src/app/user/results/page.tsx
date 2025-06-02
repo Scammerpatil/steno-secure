@@ -7,6 +7,7 @@ import {
   IconClockHour4,
   IconAlertTriangle,
 } from "@tabler/icons-react";
+import toast from "react-hot-toast";
 
 interface Answer {
   questionId: string;
@@ -46,7 +47,7 @@ export default function UserResultPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div>
         <div className="loading-dots"></div>
         <h1 className="text-4xl font-bold">Loading...</h1>
       </div>
@@ -60,6 +61,46 @@ export default function UserResultPage() {
       </div>
     );
   }
+
+  const downloadCertificate = async (resultId: string) => {
+    try {
+      const response = await axios.get(`/api/exam/certificate?id=${resultId}`, {
+        responseType: "blob",
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `certificate-${resultId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error("Failed to download certificate:", error);
+    }
+  };
+
+  const requestRetake = async (resultId: string) => {
+    if (!window.confirm("Are you sure you want to request a retake?")) {
+      return;
+    }
+    const message = prompt("Please provide a reason for requesting a retake:");
+    if (!message) {
+      toast.error("Retake request cancelled. No reason provided.");
+      return;
+    }
+    try {
+      const response = axios.post("/api/exam/request-retake", {
+        message,
+      });
+      toast.promise(response, {
+        loading: "Requesting retake...",
+        success: "Retake request sent successfully!",
+        error: "Failed to send retake request. Please try again later.",
+      });
+    } catch (error) {
+      console.error("Failed to request retake:", error);
+      toast.error("Failed to send retake request. Please try again later.");
+    }
+  };
 
   return (
     <>
@@ -81,9 +122,10 @@ export default function UserResultPage() {
               className="border border-base-300 rounded-xl p-6 bg-base-300 shadow"
             >
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">
-                  Attempt {results.length - index}
-                </h2>
+                <h2 className="text-xl font-semibold">Attempt {index + 1}</h2>
+                <span className="text-sm text-base-content/60">
+                  Total Marks: {result.totalMarks}
+                </span>
                 <span className="text-sm text-base-content/60">
                   Submitted: {new Date(result.submittedAt).toLocaleString()}
                 </span>
@@ -136,6 +178,32 @@ export default function UserResultPage() {
                   {passed ? "Passed ✅" : "Failed ❌"}
                 </div>
                 <div className="text-md mt-1">Score: {percentage}%</div>
+                <div className="text-sm text-base-content/60 mt-1">
+                  {passed ? (
+                    <button
+                      className="btn btn-success btn-sm"
+                      onClick={() => {
+                        downloadCertificate(result._id);
+                      }}
+                    >
+                      Download Certificate
+                    </button>
+                  ) : (
+                    <button
+                      className="btn btn-error btn-sm"
+                      onClick={() => {
+                        requestRetake(result._id);
+                      }}
+                    >
+                      Retake Exam
+                    </button>
+                  )}
+                </div>
+                <div className="mt-2 text-base-content/80">
+                  {passed
+                    ? "Congratulations! You have passed the exam."
+                    : "Unfortunately, you did not pass the exam. Please try again."}
+                </div>
               </div>
             </div>
           );

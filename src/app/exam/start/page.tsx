@@ -60,8 +60,21 @@ const ExamStartPage = () => {
 
   const handleFullScreenChange = () => {
     if (!document.fullscreenElement) {
-      setViolationDetected((prev) => prev + 1);
-      toast.error("Exiting fullscreen is not allowed!");
+      setViolationDetected((prev) => {
+        const newViolation = prev + 1;
+        if (newViolation >= 3) {
+          toast.error("You have violated the exam policy too many times!");
+          submitExam();
+        } else {
+          toast.error(
+            "Exiting fullscreen is not allowed! Please click to re-enter."
+          );
+        }
+        return newViolation;
+      });
+      setIsFullscreen(false);
+    } else {
+      setIsFullscreen(true);
     }
   };
 
@@ -231,20 +244,28 @@ const ExamStartPage = () => {
         0
       ),
     };
-
-    axios
-      .post("/api/exam/submit", { examData })
-      .then((res) => {
-        if (res.status === 200) {
-          toast.success("Exam submitted successfully!");
-        } else {
-          toast.error("Failed to submit exam");
-        }
-      })
-      .catch(() => {
-        toast.error("Error submitting exam");
+    try {
+      const res = axios.post("/api/exam/submit", { examData });
+      toast.promise(res, {
+        loading: "Submitting exam...",
+        success: (data) => {
+          setHasStarted(false);
+          setTimeRemaining(120 * 60);
+          setCurrentIndex(0);
+          setAnswers([]);
+          setViolationDetected(0);
+          window.close();
+          return "Exam submitted successfully!";
+        },
+        error: (error) => {
+          console.error("Error submitting exam:", error);
+          return "Failed to submit exam. Please try again.";
+        },
       });
-    window.close();
+    } catch (error) {
+      console.error("Error submitting exam:", error);
+      toast.error("Failed to submit exam. Please try again.");
+    }
   };
   const formatTime = (timeInSeconds: number): string => {
     const hours = Math.floor(timeInSeconds / 3600);

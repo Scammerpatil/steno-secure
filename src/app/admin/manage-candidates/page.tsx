@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 
 const ManageCandidatesPage = () => {
   const [candidates, setCandidates] = useState<User[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const fetchCandidates = async () => {
     const response = await axios.get("/api/candidates");
     setCandidates(response.data.candidates);
@@ -55,11 +56,25 @@ const ManageCandidatesPage = () => {
   useEffect(() => {
     fetchCandidates();
   }, []);
+  const filteredCandidates = candidates.filter(
+    (candidate) =>
+      candidate.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      candidate.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
   return (
     <>
       <h1 className="text-4xl font-bold mb-6 text-center uppercase">
         Manage Candidates
       </h1>
+      <div className="mb-4 max-w-md mx-auto">
+        <input
+          type="text"
+          placeholder="Search by name or email"
+          className="input input-bordered w-full"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </div>
       <div className="overflow-x-auto bg-base-300 rounded-box">
         <table className="table table-zebra w-full">
           <thead>
@@ -78,8 +93,8 @@ const ManageCandidatesPage = () => {
             </tr>
           </thead>
           <tbody>
-            {candidates.length > 0 ? (
-              candidates.map((candidate, index) => (
+            {filteredCandidates.length > 0 ? (
+              filteredCandidates.map((candidate, index) => (
                 <tr key={candidate._id}>
                   <th>{index + 1}</th>
                   <td>

@@ -22,9 +22,9 @@ export async function GET(req: NextRequest) {
         { status: 200 }
       );
     }
-    const results = await ExamResult.find({ user: decoded.id }).populate(
-      "answers.questionId"
-    );
+    const results = await ExamResult.find({ user: decoded.id })
+      .populate("answers.questionId")
+      .sort({ createdAt: -1 });
     if (!results) {
       return NextResponse.json(
         { message: "No result found", results: [] },
