@@ -56,7 +56,11 @@ export async function GET(req: NextRequest) {
       obtainedMarks: result.correctMarks,
       totalMarks: result.totalMarks,
       grade: grade,
-      date: new Date(result.createdAt).toLocaleDateString(),
+      date: new Date().toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }),
     };
     const certificate = await generateCertificate(data);
     return new NextResponse(certificate, {
@@ -106,5 +110,6 @@ const generateCertificate = async (data: any) => {
     `${(data?.name as string).trim().split(" ").join("_")}.pdf`
   );
   const pdfBuffer = fs.readFileSync(pdfFilePath);
+  fs.unlinkSync(pdfFilePath);
   return pdfBuffer;
 };
